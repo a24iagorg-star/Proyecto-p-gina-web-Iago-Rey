@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASTRO | Minimal Fashion</title>
+<style>
+    body {
+        background-image: url('CAMINHO_DA_TUA_IMAGEM.jpg');
+        background-attachment: fixed;
+        background-size: cover;
+        background-position: center;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+
+    /* Navegación */
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 50px;
+        background: #fff;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .logo {
+        font-weight: bold;
+        font-size: 24px;
+        letter-spacing: 4px;
+        cursor: pointer;
+    }
+
+    .nav-links {
+        display: flex;
+        list-style: none;
+    }
+
+    .nav-links li {
+        margin-left: 25px;
+    }
+
+    .nav-links a {
+        text-decoration: none;
+        color: #333;
+        font-size: 14px;
+        text-transform: uppercase;
+        transition: 0.3s;
+    }
+
+    .nav-links a.active {
+        font-weight: bold;
+        text-decoration: underline;
+    }
+
+    /* Hero Section */
+    .hero {
+        height: 80vh;
+        background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+                    url('https://unsplash.com');
+        background-size: cover;
+        background-position: center;
+        display: flex; /* Visible por defecto al cargar Colección */
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-align: center;
+    }
+
+    .hero.hidden {
+        display: none; /* Se oculta con JS en Hombre, Mujer y Carrito */
+    }
+
+    .hero h1 {
+        font-size: 60px;
+        letter-spacing: 10px;
+        margin-bottom: 10px;
+    }
+
+    .btn {
+        margin-top: 20px;
+        padding: 12px 30px;
+        background: white;
+        border: none;
+        cursor: pointer;
+        text-transform: uppercase;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    .btn:hover {
+        background: #333;
+        color: white;
+    }
+
+    /* Galería de Productos */
+    .products {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        padding: 50px;
+    }
+
+    .product-card {
+        text-align: center;
+        background: rgba(255,255,255,0.9);
+        padding: 15px;
+        border-radius: 4px;
+    }
+
+    .product-card img {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        margin-bottom: 15px;
+    }
+
+    .add-to-cart {
+        margin-top: 10px;
+        padding: 8px 15px;
+        background: transparent;
+        border: 1px solid #333;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .add-to-cart:hover {
+        background: #333;
+        color: #fff;
+    }
+
+    /* Vistas Dinámicas */
+    .view-section {
+        display: none; /* Ocultas por defecto */
+    }
+
+    .view-section.active {
+        display: block; /* Solo se muestra la sección seleccionada */
+    }
+
+    .section-title {
+        text-align: center;
+        padding-top: 40px;
+        font-size: 28px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+    }
+
+    /* Estilos del Carrito */
+    .cart-container {
+        padding: 50px;
+        max-width: 800px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 4px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .cart-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .total-container {
+        text-align: right;
+        margin-top: 30px;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .btn-clear {
+        background: #333;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        margin-top: 20px;
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 1px;
+    }
+
+    .btn-clear:hover {
+        background: #555;
+    }
+</style>
+</head>
+<body>
+
+    <!-- Navegación -->
+    <nav class="navbar">
+        <div class="logo" id="nav-logo">ASTRO</div>
+        <ul class="nav-links">
+            <li><a href="#" class="nav-link active" data-target="coleccion">Colección</a></li>
+            <li><a href="#" class="nav-link" data-target="hombre">Hombre</a></li>
+            <li><a href="#" class="nav-link" data-target="mujer">Mujer</a></li>
+            <li><a href="#" class="nav-link" id="cart-btn" data-target="carrito">Carrito (0)</a></li>
+        </ul>
+    </nav>
+
+    <!-- BANNER PRINCIPAL (Hero Section) -->
+    <header id="main-hero" class="hero">
+        <div class="hero-content">
+            <h1>ESSENTIALS</h1>
+            <p>Menos es más. Calidad sobre cantidad.</p>
+            <button class="btn" id="explore-btn">Explorar</button>
+        </div>
+    </header>
+
+    <!-- VISTA 1: COLECCIÓN -->
+    <div id="view-coleccion" class="view-section active">
+        <section class="products">
+            <div class="product-card" data-id="1" data-name="Camiseta Orgánica" data-price="29.99">
+                <img src="IMG_9542-removebg-preview.png" alt="Camiseta">
+                <h3>Camiseta Orgánica</h3>
+                <p>29.99€</p>
+                <button class="add-to-cart">Añadir</button>
+            </div>
+            <div class="product-card" data-id="2" data-name="Chaqueta Denim" data-price="45.00">
+                <img src="IMG_9547-removebg-preview.png" alt="Chaqueta">
+                <h3>Chaqueta Denim</h3>
+                <p>45.00€</p>
+                <button class="add-to-cart">Añadir</button>
+            </div>
+            <div class="product-card" data-id="3" data-name="Pantalón Chino" data-price="55.00">
+                <img src="IMG_9544-removebg-preview.png" alt="Pantalones">
+                <h3>Pantalón Chino</h3>
+                <p>55.00€</p>
+                <button class="add-to-cart">Añadir</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- VISTA 2: HOMBRE -->
+    <div id="view-hombre" class="view-section">
+        <h2 class="section-title">Colección Hombre</h2>
+        <section class="products">
+            <div class="product-card" data-id="1" data-name="Camiseta Orgánica" data-price="29.99">
+                <img src="IMG_9542-removebg-preview.png" alt="Camiseta">
+                <h3>Camiseta Orgánica</h3>
+                <p>29.99€</p>
+                <button class="add-to-cart">Añadir</button>
+            </div>
+            <div class="product-card" data-id="2" data-name="Chaqueta Denim" data-price="45.00">
+                <img src="IMG_9547-removebg-preview.png" alt="Chaqueta">
+                <h3>Chaqueta Denim</h3>
+                <p>45.00€</p>
+                <button class="add-to-cart">Añadir</button>
+            </div>
+            <div class="product-card" data-id="3" data-name="Pantalón Chino" data-price="55.00">
+                <img src="IMG_9544-removebg-preview.png" alt="Pantalones">
+                <h3>Pantalón Chino</h3>
+                <p>55.00€</p>
+                <button class="add-to-cart">Añadir</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- VISTA 3: MUJER -->
+    <div id="view-mujer" class="view-section">
+        <h2 class="section-title">Colección Mujer</h2>
+        <section class="products">
+            <div class="product-card" data-id="1" data-name="Camiseta Orgánica" data-price="29.99">
+                <img src="IMG_9542-removebg-preview.png" alt="Camiseta">
+                <h3>Camiseta Orgánica</h3>
+                <p>29.99€</p>
+                <button class="add-to-cart">Añadir</button>
+            </div>
+            <div class="product-card" data-id="2" data-name="Chaqueta Denim" data-price="45.00">
+                <img src="IMG_9547-removebg-preview.png" alt="Chaqueta">
+                <h3>Chaqueta Denim</h3>
+                <p>45.00€</p>
+                <button class="add-to-cart">Añadir</button>
+            </div>
+            <div class="product-card" data-id="3" data-name="Pantalón Chino" data-price="55.00">
+                <img src="IMG_9544-removebg-preview.png" alt="Pantalones">
+                <h3>Pantalón Chino</h3>
+                <p>55.00€</p>
+                <button class="add-to-cart">Añadir</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- VISTA 4: CARRITO -->
+    <div id="view-carrito" class="view-section">
+        <div class="cart-container">
+            <h2>Tu Cesta</h2>
+            <div id="cart-items-list"></div>
+            <div class="total-container">Total: <span id="cart-total">0.00</span>€</div>
+            <button class="btn-clear" id="clear-cart">Vaciar Carrito</button>
+        </div>
+    </div>
+
+    <!-- Enlace al archivo JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
